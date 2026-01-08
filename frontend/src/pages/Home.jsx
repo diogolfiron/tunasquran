@@ -31,7 +31,7 @@ import {
   faqData,
 } from "../mockData";
 
-  const API_BASE = "http://localhost:8000";
+const API_BASE = "http://localhost:8000";
 import {
   Card,
   CardContent,
@@ -513,7 +513,11 @@ const Home = () => {
                       className="group relative overflow-hidden rounded-lg shadow-lg aspect-square"
                     >
                       <img
-                        src={img.url.startsWith("http") ? img.url : `${API_BASE}${img.url}`}
+                        src={
+                          img.url.startsWith("http")
+                            ? img.url
+                            : `${API_BASE}${img.url}`
+                        }
                         alt={img.title}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                       />
@@ -536,7 +540,11 @@ const Home = () => {
                       className="group relative overflow-hidden rounded-lg shadow-lg aspect-square"
                     >
                       <img
-                        src={img.url.startsWith("http") ? img.url : `${API_BASE}${img.url}`}
+                        src={
+                          img.url.startsWith("http")
+                            ? img.url
+                            : `${API_BASE}${img.url}`
+                        }
                         alt={img.title}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                       />
@@ -565,7 +573,9 @@ const Home = () => {
                 "Tadabbur",
                 "One Day Motivation",
               ].map((cat) => (
-                <TabsTrigger key={cat} value={cat}>{cat}</TabsTrigger>
+                <TabsTrigger key={cat} value={cat}>
+                  {cat}
+                </TabsTrigger>
               ))}
             </TabsList>
             {[
@@ -752,7 +762,7 @@ const Home = () => {
             </div>
             <div className="text-center">
               <a
-                href="https://docs.google.com/forms/d/e/1FAIpQLSfj_ROTdxRM5-EmbOuvCU4eu2VtC2nehV6nf8DiftRlo6N6Xw/viewform?usp=header"
+                href="https://docs.google.com/forms/d/e/1FAIpQLSeyth4ZAqR0yQHeZlLIava4BpwTCZvf9lb4YPaVVSVKISge3g/viewform"
                 target="_blank"
                 rel="noopener noreferrer"
               >

@@ -54,9 +54,9 @@ export const visiMisi = {
   visi: "Menjadi wadah pembelajaran Al-Qur'an dengan metode quantum learning guna mencetak generasi yang mandiri dan berakhlakul karimah",
   misi: [
     "Menciptakan lingkungan belajar yang kondusif",
-    "Program hafalan 30 juz",
-    "Mencetak kader dakwah yang berakhlakul qur'ani",
-    "Mencetak kader dakwah yang tangguh dan mandiri",
+    "implementasi living Quran dalam segala aktifitas ",
+    "mencetak generasi muda yang berakhlak qurani",
+    "mencetak generasi muda yang tangguh dan mandiri",
     "Mencetak generasi yang memiliki kepedulian terhadap lingkungan dan sesama",
   ],
 };
@@ -107,7 +107,8 @@ export const kurikulum = [
 export const pengajar = [
   {
     name: "Bunda Hartanti Soewito, ST.",
-    subject: "Shirah Nabawiyah, Kewirausahaan dan Metodologi penelitian",
+    subject:
+      "Shirah Nabawiyah, Kewirausahaan, Metodologi penelitian, ESQ dan kecerdasan adversitas",
   },
   { name: "Ustadzah Fitri Rohanah", subject: "Tahfidz" },
   { name: "Ustadzah Hamadah Azzahra", subject: "Tahfidz" },
@@ -133,6 +134,18 @@ export const pengajar = [
   {
     name: "Ustadz Mustabsyiril Abrar, ST.",
     subject: "Matan Al-Jazari dan Qiroah Sab'ah",
+  },
+  {
+    name: "ilyas Mubarok, SSos, MKom",
+    subject: "Public Speaking",
+  },
+  {
+    name: "Harun Djanisman, SS,SKom, CHt, Nlp",
+    subject: "self development, character building",
+  },
+  {
+    name: "Pengajar tahfidz",
+    subject: "disandangkan gelar Al hafidzoh",
   },
 ];
 
@@ -229,6 +242,22 @@ export const usaha = [
     title: "Mitra Tani",
     description:
       "Ketahanan pangan adalah pondasi kemandirian. Karena itu, Tunas Qur’an tak berjalan sendiri. Melalui Mitra Tani, kami menjalin kerja sama dengan lembaga swadaya masyarakat (LSM) yang mendukung langkah kami dalam menyediakan pangan sehat, berkelanjutan, dan ramah lingkungan.",
+  },
+  {
+    title: "Afiliator",
+    description: "",
+  },
+  {
+    title: "Farming (Pertanian + Peternakan)",
+    description: "",
+  },
+  {
+    title: "Edu Trip",
+    description: "",
+  },
+  {
+    title: "Produk digital Webinar + ebook",
+    description: "",
   },
 ];
 
