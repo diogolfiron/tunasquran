@@ -16,6 +16,8 @@ const menu = [
   { name: "PMB", icon: GraduationCap, path: "/admin/pmb" },
   { name: "Pengajar", icon: Users, path: "/admin/pengajar" },
   { name: "Gallery", icon: Image, path: "/admin/gallery" },
+  { name: "Visi & Misi", icon: BookOpen, path: "/admin/visi-misi" },
+  { name: "Kurikulum", icon: GraduationCap, path: "/admin/kurikulum" },
 
 ];
 

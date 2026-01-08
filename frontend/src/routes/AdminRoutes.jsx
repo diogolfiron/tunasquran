@@ -5,6 +5,9 @@ import PMBAdmin from "../admin/PMBAdmin";
 import InspirasiAdmin from "../admin/InspirasiAdmin";
 import GalleryCreate from "../admin/GalleryCreate";
 import ProtectedAdmin from "../admin/ProtectedAdmin";
+import VisiMisiAdmin from "../admin/Visi&Misi";
+import KurikulumAdmin from "../admin/Kurikulum";
+
 
 export default function AdminRoutes() {
   return (
@@ -15,6 +18,8 @@ export default function AdminRoutes() {
           <Route path="pmb" element={<PMBAdmin />} />
           <Route path="inspirasi" element={<InspirasiAdmin />} />
           <Route path="gallery" element={<GalleryCreate />} />
+          <Route path="visi-misi" element={<VisiMisiAdmin />} />
+          <Route path="kurikulum" element={<KurikulumAdmin />} />
         </Route>
       </Route>
     </Routes>

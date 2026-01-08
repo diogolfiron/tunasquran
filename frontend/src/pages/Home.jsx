@@ -21,8 +21,6 @@ import {
   heroImages,
   siteInfo,
   yayasan,
-  visiMisi,
-  kurikulum,
   pengajar,
   inspirasiPosts,
   usaha,
@@ -59,6 +57,8 @@ const Home = () => {
   const [openSubmenu, setOpenSubmenu] = useState(null);
   const [gallery, setGallery] = useState([]);
   const [inspirasiList, setInspirasiList] = useState([]);
+  const [visiMisiData, setVisiMisiData] = useState(null);
+  const [kurikulumList, setKurikulumList] = useState([]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -89,6 +89,31 @@ const Home = () => {
       }
     };
     fetchInspirasi();
+  }, []);
+
+  useEffect(() => {
+  const fetchVisiMisi = async () => {
+    try {
+      const res = await axios.get(`${API_BASE}/api/visi-misi`);
+      setVisiMisiData(res.data);
+    } catch (err) {
+      console.error("Failed to fetch visi misi:", err);
+    }
+  };
+
+  fetchVisiMisi();
+}, []);
+
+useEffect(() => {
+    const fetchKurikulum = async () => {
+      try {
+        const res = await axios.get(`${API_BASE}/api/kurikulum`);
+        setKurikulumList(res.data || []);
+      } catch (err) {
+        console.error("Failed to fetch kurikulum:", err);
+      }
+    };
+    fetchKurikulum();
   }, []);
 
   const scrollToSection = (id) => {
@@ -395,32 +420,45 @@ const Home = () => {
           <h2 className="text-4xl font-bold text-[#80916f] mb-8 text-center">
             Visi & Misi
           </h2>
-          <div className="grid md:grid-cols-2 gap-8">
-            <Card className="border-yellow-200 bg-gradient-to-br from-yellow-50 to-white shadow-lg">
-              <CardHeader>
-                <CardTitle className="text-xl text-yellow-700">Visi</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-700 leading-relaxed">{visiMisi.visi}</p>
-              </CardContent>
-            </Card>
-            <Card className="text-[#80916f] bg-gradient-to-br from-green-50 to-white shadow-lg">
-              <CardHeader>
-                <CardTitle className="text-xl text-[#80916f]">Misi</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-2">
-                  {visiMisi.misi.map((item, index) => (
-                    <li key={index} className="flex items-start">
-                      <span className="text-[#80916f] mr-2">•</span>
-                      <span className="text-gray-700">{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
-          </div>
+
+          {!visiMisiData ? (
+            <p className="text-center text-gray-500">Memuat visi & misi...</p>
+          ) : (
+            <div className="grid md:grid-cols-2 gap-8">
+              <Card className="border-yellow-200 bg-gradient-to-br from-yellow-50 to-white shadow-lg">
+                <CardHeader>
+                  <CardTitle className="text-xl text-yellow-700">
+                    Visi
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-gray-700 leading-relaxed">
+                    {visiMisiData.visi}
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gradient-to-br from-green-50 to-white shadow-lg">
+                <CardHeader>
+                  <CardTitle className="text-xl text-[#80916f]">
+                    Misi
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-2">
+                    {visiMisiData.misi.map((item, index) => (
+                      <li key={index} className="flex items-start">
+                        <span className="text-[#80916f] mr-2">•</span>
+                        <span className="text-gray-700">{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
+            </div>
+          )}
         </section>
+
 
         {/* Struktur Organisasi */}
         <section id="struktur" className="scroll-mt-20">
@@ -438,34 +476,41 @@ const Home = () => {
         </section>
 
         {/* Kurikulum */}
-        <section id="kurikulum" className="scroll-mt-20">
-          <h2 className="text-4xl font-bold text-[#80916f] mb-4 text-center">
-            Kurikulum Khas Tunas Qur'an
-          </h2>
-          <p className="text-center text-gray-600 mb-12 max-w-3xl mx-auto">
-            Bukan sekadar belajar, tapi menumbuhkan pribadi Qur'ani yang siap
-            memimpin dan memberi manfaat.
-          </p>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {kurikulum.map((item, index) => (
-              <Card
-                key={index}
-                className="border-green-100 hover:shadow-lg transition-shadow duration-300"
-              >
-                <CardHeader>
-                  <CardTitle className="text-lg text-[#80916f]">
-                    {item.title}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-gray-600 leading-relaxed">
-                    {item.description}
-                  </p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </section>
+<section id="kurikulum" className="scroll-mt-20">
+  <h2 className="text-4xl font-bold text-[#80916f] mb-4 text-center">
+    Kurikulum Khas Tunas Qur'an
+  </h2>
+  <p className="text-center text-gray-600 mb-12 max-w-3xl mx-auto">
+    Bukan sekadar belajar, tapi menumbuhkan pribadi Qur'ani yang siap
+    memimpin dan memberi manfaat.
+  </p>
+
+  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {kurikulumList.length === 0 ? (
+      <p className="text-center text-gray-500 col-span-full">
+        Memuat kurikulum...
+      </p>
+    ) : (
+      kurikulumList.map((item) => (
+        <Card
+          key={item.id} // pastikan backend mengirimkan id unik
+          className="border-green-100 hover:shadow-lg transition-shadow duration-300"
+        >
+          <CardHeader>
+            <CardTitle className="text-lg text-[#80916f]">
+              {item.title}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-gray-600 leading-relaxed">
+              {item.description}
+            </p>
+          </CardContent>
+        </Card>
+      ))
+    )}
+  </div>
+</section>
 
         {/* Pengajar */}
         <section id="pengajar" className="scroll-mt-20">
