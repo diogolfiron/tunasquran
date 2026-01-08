@@ -11,10 +11,15 @@ from typing import List, Optional
 import aiofiles
 import uuid
 from datetime import datetime, timezone
+from dotenv import load_dotenv
 
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
+
+print("MONGO_URL =", os.environ.get("MONGO_URL"))
+print("DB_NAME =", os.environ.get("DB_NAME"))
+
 
 # Images directory used for uploads and static mounting
 IMAGES_DIR = ROOT_DIR.parent / "frontend" / "public" / "images"
@@ -34,10 +39,12 @@ api_router = APIRouter(prefix="/api")
 # Define Models
 class StatusCheck(BaseModel):
     model_config = ConfigDict(extra="ignore")  # Ignore MongoDB's _id field
-    
+
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     client_name: str
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    timestamp: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc))
+
 
 class StatusCheckCreate(BaseModel):
     client_name: str
@@ -93,6 +100,8 @@ class InspirasiUpdate(BaseModel):
     content: Optional[str] = None
 
 # Add your routes to the router instead of directly to app
+
+
 @api_router.get("/")
 async def root():
     return {"message": "Hello World"}
@@ -181,7 +190,8 @@ async def upload_inspirasi_image(file: UploadFile = File(...)):
 
 @api_router.put("/inspirasi/{item_id}", response_model=InspirasiItem)
 async def update_inspirasi(item_id: str, update: InspirasiUpdate):
-    update_dict = {k: v for k, v in update.model_dump().items() if v is not None}
+    update_dict = {k: v for k, v in update.model_dump().items()
+                   if v is not None}
     if not update_dict:
         raise HTTPException(status_code=400, detail="No fields to update")
     await db.inspirasi.update_one({"id": item_id}, {"$set": update_dict})
@@ -201,7 +211,8 @@ async def delete_inspirasi(item_id: str):
 
 @api_router.put("/gallery/{item_id}", response_model=GalleryItem)
 async def update_gallery(item_id: str, update: GalleryUpdate):
-    update_dict = {k: v for k, v in update.model_dump().items() if v is not None}
+    update_dict = {k: v for k, v in update.model_dump().items()
+                   if v is not None}
     if not update_dict:
         raise HTTPException(status_code=400, detail="No fields to update")
     await db.gallery.update_one({"id": item_id}, {"$set": update_dict})
@@ -218,28 +229,30 @@ async def delete_gallery(item_id: str):
         raise HTTPException(status_code=404, detail="Gallery item not found")
     return {"deleted": True}
 
+
 @api_router.post("/status", response_model=StatusCheck)
 async def create_status_check(input: StatusCheckCreate):
     status_dict = input.model_dump()
     status_obj = StatusCheck(**status_dict)
-    
+
     # Convert to dict and serialize datetime to ISO string for MongoDB
     doc = status_obj.model_dump()
     doc['timestamp'] = doc['timestamp'].isoformat()
-    
+
     _ = await db.status_checks.insert_one(doc)
     return status_obj
+
 
 @api_router.get("/status", response_model=List[StatusCheck])
 async def get_status_checks():
     # Exclude MongoDB's _id field from the query results
     status_checks = await db.status_checks.find({}, {"_id": 0}).to_list(1000)
-    
+
     # Convert ISO string timestamps back to datetime objects
     for check in status_checks:
         if isinstance(check['timestamp'], str):
             check['timestamp'] = datetime.fromisoformat(check['timestamp'])
-    
+
     return status_checks
 
 # Include the router in the main app
@@ -266,9 +279,11 @@ async def seed_gallery():
                 docs.append(copy)
             if docs:
                 await db.gallery.insert_many(docs)
-                logging.getLogger(__name__).info("Seeded gallery collection with default images")
+                logging.getLogger(__name__).info(
+                    "Seeded gallery collection with default images")
     except Exception as e:
-        logging.getLogger(__name__).warning(f"Could not seed gallery collection: {e}")
+        logging.getLogger(__name__).warning(
+            f"Could not seed gallery collection: {e}")
 
 app.add_middleware(
     CORSMiddleware,
@@ -284,6 +299,7 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
+
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
