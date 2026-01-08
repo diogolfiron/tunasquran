@@ -433,7 +433,12 @@ useEffect(() => {
                 </CardHeader>
                 <CardContent>
                   <p className="text-gray-700 leading-relaxed">
-                    {visiMisiData.visi}
+                    {visiMisiData.visi.map((item, index) => (
+                      <li key={index} className="flex items-start">
+                        <span className="text-[#80916f] mr-2">•</span>
+                        <span className="text-gray-700">{item}</span>
+                      </li>
+                    ))}
                   </p>
                 </CardContent>
               </Card>
