@@ -99,6 +99,45 @@ class InspirasiUpdate(BaseModel):
     author: Optional[str] = None
     content: Optional[str] = None
 
+# Visi Misi models
+class VisiMisiItem(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    visi: List[str]
+    misi: List[str]
+    updated_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc)
+    )
+
+
+class VisiMisiCreate(BaseModel):
+    visi: List[str]
+    misi: List[str]
+
+
+class VisiMisiUpdate(BaseModel):
+    visi: Optional[List[str]] = None
+    misi: Optional[List[str]] = None
+
+class KurikulumItem(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    title: str
+    description: Optional[str] = None
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+class KurikulumCreate(BaseModel):
+    title: str
+    description: Optional[str] = None
+
+
+class KurikulumUpdate(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+
+
 # Add your routes to the router instead of directly to app
 
 
@@ -187,6 +226,24 @@ async def upload_inspirasi_image(file: UploadFile = File(...)):
         await out_file.write(content)
     return {"url": f"/images/{file.filename}"}
 
+@api_router.post("/visi-misi", response_model=VisiMisiItem)
+async def create_or_update_visi_misi(input: VisiMisiCreate):
+    data = VisiMisiItem(
+        visi=input.visi,
+        misi=input.misi,
+        updated_at=datetime.now(timezone.utc)
+    ).model_dump()
+
+    await db.visi_misi.update_one(
+        {},
+        {"$set": data},
+        upsert=True
+    )
+
+    doc = await db.visi_misi.find_one({}, {"_id": 0})
+    return doc
+
+
 
 @api_router.put("/inspirasi/{item_id}", response_model=InspirasiItem)
 async def update_inspirasi(item_id: str, update: InspirasiUpdate):
@@ -207,6 +264,43 @@ async def delete_inspirasi(item_id: str):
     if res.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Inspirasi item not found")
     return {"deleted": True}
+
+@api_router.delete("/visi-misi")
+async def delete_visi_misi():
+    res = await db.visi_misi.delete_many({})
+    if res.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Visi Misi not found")
+    return {"deleted": True}
+
+@api_router.put("/visi-misi/{id}")
+async def update_visi_misi(id: str, data: VisiMisiUpdate):
+    update_data = {k: v for k, v in data.model_dump().items() if v is not None}
+
+    if not update_data:
+        raise HTTPException(
+            status_code=400,
+            detail="Tidak ada data yang dikirim untuk diperbarui"
+        )
+
+    result = await db.visi_misi.update_one(
+        {"_id": id},
+        {"$set": update_data}
+    )
+
+    if result.matched_count == 0:
+        raise HTTPException(
+            status_code=404,
+            detail="Visi Misi tidak ditemukan"
+        )
+
+    updated = await db.visi_misi.find_one({"_id": id})
+
+    return {
+        "status": True,
+        "message": "Visi Misi berhasil diperbarui",
+        "data": updated
+    }
+
 
 
 @api_router.put("/gallery/{item_id}", response_model=GalleryItem)
@@ -242,6 +336,12 @@ async def create_status_check(input: StatusCheckCreate):
     _ = await db.status_checks.insert_one(doc)
     return status_obj
 
+@api_router.get("/visi-misi", response_model=Optional[VisiMisiItem])
+async def get_visi_misi():
+    doc = await db.visi_misi.find_one({}, {"_id": 0})
+    return doc
+
+
 
 @api_router.get("/status", response_model=List[StatusCheck])
 async def get_status_checks():
@@ -254,6 +354,51 @@ async def get_status_checks():
             check['timestamp'] = datetime.fromisoformat(check['timestamp'])
 
     return status_checks
+
+@api_router.get("/kurikulum", response_model=List[KurikulumItem])
+async def get_kurikulum():
+    """Ambil semua data kurikulum"""
+    try:
+        items = await db.kurikulum.find({}, {"_id": 0}).to_list(1000)
+        return items
+    except Exception as e:
+        logger.exception("Fetch kurikulum error")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.post("/kurikulum", response_model=KurikulumItem)
+async def create_kurikulum(input: KurikulumCreate):
+    """Tambah kurikulum baru"""
+    obj = KurikulumItem(**input.model_dump())
+    doc = obj.model_dump()
+    try:
+        await db.kurikulum.insert_one(doc)
+    except Exception as e:
+        logger.exception("Failed to insert kurikulum")
+        raise HTTPException(status_code=500, detail=str(e))
+    return obj
+
+
+@api_router.put("/kurikulum/{item_id}", response_model=KurikulumItem)
+async def update_kurikulum(item_id: str, update: KurikulumUpdate):
+    """Update kurikulum berdasarkan id"""
+    update_dict = {k: v for k, v in update.model_dump().items() if v is not None}
+    if not update_dict:
+        raise HTTPException(status_code=400, detail="Tidak ada data untuk diperbarui")
+    result = await db.kurikulum.update_one({"id": item_id}, {"$set": update_dict})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Kurikulum tidak ditemukan")
+    doc = await db.kurikulum.find_one({"id": item_id}, {"_id": 0})
+    return doc
+
+
+@api_router.delete("/kurikulum/{item_id}")
+async def delete_kurikulum(item_id: str):
+    """Hapus kurikulum berdasarkan id"""
+    res = await db.kurikulum.delete_one({"id": item_id})
+    if res.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Kurikulum tidak ditemukan")
+    return {"deleted": True}
 
 # Include the router in the main app
 app.include_router(api_router)
