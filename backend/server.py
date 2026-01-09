@@ -39,6 +39,7 @@ api_router = APIRouter(prefix="/api")
 # STRUKTUR ORGANISASI MODELS
 # =========================
 
+
 class StrukturItem(BaseModel):
     model_config = ConfigDict(extra="ignore")
 
@@ -46,7 +47,8 @@ class StrukturItem(BaseModel):
     jabatan: str
     nama: str
     deskripsi: Optional[str] = None
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc))
 
 
 class StrukturCreate(BaseModel):
@@ -64,6 +66,7 @@ class StrukturUpdate(BaseModel):
 # PENGAJAR MODELS
 # =========================
 
+
 class PengajarItem(BaseModel):
     model_config = ConfigDict(extra="ignore")
 
@@ -71,7 +74,8 @@ class PengajarItem(BaseModel):
     nama: str
     mapel: str
     deskripsi: Optional[str] = None
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc))
 
 
 class PengajarCreate(BaseModel):
@@ -100,7 +104,18 @@ class StatusCheckCreate(BaseModel):
     client_name: str
 
 
+class StrukturItem(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    jabatan: str
+    nama: str
+    deskripsi: Optional[str] = None
+    created_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc))
 # Gallery models
+
+
 class GalleryItem(BaseModel):
     model_config = ConfigDict(extra="ignore")
 
@@ -150,6 +165,8 @@ class InspirasiUpdate(BaseModel):
     content: Optional[str] = None
 
 # Visi Misi models
+
+
 class VisiMisiItem(BaseModel):
     model_config = ConfigDict(extra="ignore")
 
@@ -170,12 +187,14 @@ class VisiMisiUpdate(BaseModel):
     visi: Optional[List[str]] = None
     misi: Optional[List[str]] = None
 
+
 class KurikulumItem(BaseModel):
     model_config = ConfigDict(extra="ignore")
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     title: str
     description: Optional[str] = None
-    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc))
 
 
 class KurikulumCreate(BaseModel):
@@ -186,16 +205,6 @@ class KurikulumCreate(BaseModel):
 class KurikulumUpdate(BaseModel):
     title: Optional[str] = None
     description: Optional[str] = None
-
-class FormLinkItem(BaseModel):
-    id: str
-    link: str
-
-class FormLinkCreate(BaseModel):
-    link: str
-
-class FormLinkUpdate(BaseModel):
-    link: Optional[str] = None
 
 
 class JalurItem(BaseModel):
@@ -234,13 +243,15 @@ class KelasUpdate(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
 
+
 class UsahaItem(BaseModel):
     model_config = ConfigDict(extra="ignore")
 
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     title: str
     description: Optional[str] = None
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc))
 
 
 class UsahaCreate(BaseModel):
@@ -264,51 +275,6 @@ async def root():
 # Default gallery data is intentionally left empty so admin controls what appears
 gallery_images = []
 
-form_link_router = APIRouter(prefix="/form-link")
-
-@form_link_router.get("/", response_model=List[FormLinkItem])
-async def get_form_links():
-    items = await db.form_link.find({}, {"_id": 0}).to_list(1000)
-    return items
-
-@form_link_router.post("/", response_model=FormLinkItem)
-async def create_form_link(input: FormLinkCreate):
-    new_item = FormLinkItem(id=str(uuid.uuid4()), link=input.link)
-    await db.form_link.insert_one(new_item.model_dump())
-    return new_item
-
-@form_link_router.put("/{item_id}", response_model=FormLinkItem)
-async def update_form_link(item_id: str, update: FormLinkUpdate):
-    update_dict = {k: v for k, v in update.model_dump().items() if v is not None}
-    if not update_dict:
-        raise HTTPException(status_code=400, detail="Tidak ada data untuk diperbarui")
-    
-    result = await db.form_link.update_one({"id": item_id}, {"$set": update_dict})
-    if result.matched_count == 0:
-        raise HTTPException(status_code=404, detail="Form link tidak ditemukan")
-    
-    doc = await db.form_link.find_one({"id": item_id}, {"_id": 0})
-    return doc
-
-@form_link_router.delete("/{item_id}")
-async def delete_form_link(item_id: str):
-    res = await db.form_link.delete_one({"id": item_id})
-    if res.deleted_count == 0:
-        raise HTTPException(status_code=404, detail="Form link tidak ditemukan")
-    return {"deleted": True}
-
-# Include router di api_router
-api_router.include_router(form_link_router)
-
-
-# DELETE link berdasarkan id
-@api_router.delete("/{item_id}")
-async def delete_form_link(item_id: str):
-    res = await db.form_link.delete_one({"id": item_id})
-    if res.deleted_count == 0:
-        raise HTTPException(status_code=404, detail="Form link tidak ditemukan")
-    return {"deleted": True}
-
 
 @api_router.get("/pmb/jalur", response_model=List[JalurItem])
 async def get_jalur():
@@ -325,9 +291,11 @@ async def create_jalur(input: JalurCreate):
 
 @api_router.put("/pmb/jalur/{item_id}", response_model=JalurItem)
 async def update_jalur(item_id: str, update: JalurUpdate):
-    update_dict = {k: v for k, v in update.model_dump().items() if v is not None}
+    update_dict = {k: v for k, v in update.model_dump().items()
+                   if v is not None}
     if not update_dict:
-        raise HTTPException(status_code=400, detail="Tidak ada data untuk diperbarui")
+        raise HTTPException(
+            status_code=400, detail="Tidak ada data untuk diperbarui")
     result = await db.pmb_jalur.update_one({"id": item_id}, {"$set": update_dict})
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Jalur tidak ditemukan")
@@ -341,6 +309,7 @@ async def delete_jalur(item_id: str):
     if res.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Jalur tidak ditemukan")
     return {"deleted": True}
+
 
 @api_router.get("/pmb/kelas", response_model=List[KelasItem])
 async def get_kelas():
@@ -357,9 +326,11 @@ async def create_kelas(input: KelasCreate):
 
 @api_router.put("/pmb/kelas/{item_id}", response_model=KelasItem)
 async def update_kelas(item_id: str, update: KelasUpdate):
-    update_dict = {k: v for k, v in update.model_dump().items() if v is not None}
+    update_dict = {k: v for k, v in update.model_dump().items()
+                   if v is not None}
     if not update_dict:
-        raise HTTPException(status_code=400, detail="Tidak ada data untuk diperbarui")
+        raise HTTPException(
+            status_code=400, detail="Tidak ada data untuk diperbarui")
     result = await db.pmb_kelas.update_one({"id": item_id}, {"$set": update_dict})
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Kelas tidak ditemukan")
@@ -373,6 +344,7 @@ async def delete_kelas(item_id: str):
     if res.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Kelas tidak ditemukan")
     return {"deleted": True}
+
 
 @api_router.get("/gallery", response_model=List[GalleryItem])
 async def get_gallery():
@@ -449,6 +421,7 @@ async def upload_inspirasi_image(file: UploadFile = File(...)):
         await out_file.write(content)
     return {"url": f"/images/{file.filename}"}
 
+
 @api_router.post("/visi-misi", response_model=VisiMisiItem)
 async def create_or_update_visi_misi(input: VisiMisiCreate):
     data = VisiMisiItem(
@@ -465,7 +438,6 @@ async def create_or_update_visi_misi(input: VisiMisiCreate):
 
     doc = await db.visi_misi.find_one({}, {"_id": 0})
     return doc
-
 
 
 @api_router.put("/inspirasi/{item_id}", response_model=InspirasiItem)
@@ -488,12 +460,14 @@ async def delete_inspirasi(item_id: str):
         raise HTTPException(status_code=404, detail="Inspirasi item not found")
     return {"deleted": True}
 
+
 @api_router.delete("/visi-misi")
 async def delete_visi_misi():
     res = await db.visi_misi.delete_many({})
     if res.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Visi Misi not found")
     return {"deleted": True}
+
 
 @api_router.put("/visi-misi/{id}")
 async def update_visi_misi(id: str, data: VisiMisiUpdate):
@@ -523,7 +497,6 @@ async def update_visi_misi(id: str, data: VisiMisiUpdate):
         "message": "Visi Misi berhasil diperbarui",
         "data": updated
     }
-
 
 
 @api_router.put("/gallery/{item_id}", response_model=GalleryItem)
@@ -559,11 +532,11 @@ async def create_status_check(input: StatusCheckCreate):
     _ = await db.status_checks.insert_one(doc)
     return status_obj
 
+
 @api_router.get("/visi-misi", response_model=Optional[VisiMisiItem])
 async def get_visi_misi():
     doc = await db.visi_misi.find_one({}, {"_id": 0})
     return doc
-
 
 
 @api_router.get("/status", response_model=List[StatusCheck])
@@ -577,6 +550,7 @@ async def get_status_checks():
             check['timestamp'] = datetime.fromisoformat(check['timestamp'])
 
     return status_checks
+
 
 @api_router.get("/kurikulum", response_model=List[KurikulumItem])
 async def get_kurikulum():
@@ -605,12 +579,15 @@ async def create_kurikulum(input: KurikulumCreate):
 @api_router.put("/kurikulum/{item_id}", response_model=KurikulumItem)
 async def update_kurikulum(item_id: str, update: KurikulumUpdate):
     """Update kurikulum berdasarkan id"""
-    update_dict = {k: v for k, v in update.model_dump().items() if v is not None}
+    update_dict = {k: v for k, v in update.model_dump().items()
+                   if v is not None}
     if not update_dict:
-        raise HTTPException(status_code=400, detail="Tidak ada data untuk diperbarui")
+        raise HTTPException(
+            status_code=400, detail="Tidak ada data untuk diperbarui")
     result = await db.kurikulum.update_one({"id": item_id}, {"$set": update_dict})
     if result.matched_count == 0:
-        raise HTTPException(status_code=404, detail="Kurikulum tidak ditemukan")
+        raise HTTPException(
+            status_code=404, detail="Kurikulum tidak ditemukan")
     doc = await db.kurikulum.find_one({"id": item_id}, {"_id": 0})
     return doc
 
@@ -620,12 +597,14 @@ async def delete_kurikulum(item_id: str):
     """Hapus kurikulum berdasarkan id"""
     res = await db.kurikulum.delete_one({"id": item_id})
     if res.deleted_count == 0:
-        raise HTTPException(status_code=404, detail="Kurikulum tidak ditemukan")
+        raise HTTPException(
+            status_code=404, detail="Kurikulum tidak ditemukan")
     return {"deleted": True}
 
 # =========================
 # TUNAS USAHA ROUTES
 # =========================
+
 
 @api_router.get("/usaha", response_model=List[UsahaItem])
 async def get_usaha():
@@ -642,10 +621,12 @@ async def create_usaha(input: UsahaCreate):
 
 @api_router.put("/usaha/{item_id}", response_model=UsahaItem)
 async def update_usaha(item_id: str, update: UsahaUpdate):
-    update_dict = {k: v for k, v in update.model_dump().items() if v is not None}
+    update_dict = {k: v for k, v in update.model_dump().items()
+                   if v is not None}
 
     if not update_dict:
-        raise HTTPException(status_code=400, detail="Tidak ada data untuk diperbarui")
+        raise HTTPException(
+            status_code=400, detail="Tidak ada data untuk diperbarui")
 
     result = await db.usaha.update_one(
         {"id": item_id},
@@ -670,6 +651,7 @@ async def delete_usaha(item_id: str):
 # STRUKTUR ORGANISASI ROUTES
 # =========================
 
+
 @api_router.get("/struktur", response_model=List[StrukturItem])
 async def get_struktur():
     items = await db.struktur.find({}, {"_id": 0}).to_list(1000)
@@ -685,7 +667,8 @@ async def create_struktur(input: StrukturCreate):
 
 @api_router.put("/struktur/{item_id}", response_model=StrukturItem)
 async def update_struktur(item_id: str, update: StrukturUpdate):
-    update_dict = {k: v for k, v in update.model_dump().items() if v is not None}
+    update_dict = {k: v for k, v in update.model_dump().items()
+                   if v is not None}
 
     if not update_dict:
         raise HTTPException(
@@ -718,6 +701,7 @@ async def delete_struktur(item_id: str):
         )
     return {"deleted": True}
 
+
 # =========================
 # PENGAJAR ROUTES
 # =========================
@@ -737,7 +721,8 @@ async def create_pengajar(input: PengajarCreate):
 
 @api_router.put("/pengajar/{item_id}", response_model=PengajarItem)
 async def update_pengajar(item_id: str, update: PengajarUpdate):
-    update_dict = {k: v for k, v in update.model_dump().items() if v is not None}
+    update_dict = {k: v for k, v in update.model_dump().items()
+                   if v is not None}
 
     if not update_dict:
         raise HTTPException(
