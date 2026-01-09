@@ -18,6 +18,7 @@ const menu = [
   { name: "Gallery", icon: Image, path: "/admin/gallery" },
   { name: "Visi & Misi", icon: BookOpen, path: "/admin/visi-misi" },
   { name: "Kurikulum", icon: GraduationCap, path: "/admin/kurikulum" },
+  { name: "Form Link", icon: Link, path: "/admin/form-link" },
 
   // ✅ TUNAS USAHA
   { name: "Tunas Usaha", icon: Briefcase, path: "/admin/usaha" },
