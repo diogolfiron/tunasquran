@@ -1,5 +1,5 @@
 import { Link, Outlet, useNavigate } from "react-router-dom";
-import { LogOut } from "lucide-react";
+import { LogOut, User } from "lucide-react";
 import {
   LayoutDashboard,
   Image,
@@ -18,6 +18,7 @@ const menu = [
   { name: "Gallery", icon: Image, path: "/admin/gallery" },
   { name: "Visi & Misi", icon: BookOpen, path: "/admin/visi-misi" },
   { name: "Kurikulum", icon: GraduationCap, path: "/admin/kurikulum" },
+  { name: "Form Link", icon: User, path: "/admin/form-link" },
 
   // ✅ TUNAS USAHA
   { name: "Tunas Usaha", icon: Briefcase, path: "/admin/usaha" },

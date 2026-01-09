@@ -10,6 +10,7 @@ import KurikulumAdmin from "../admin/Kurikulum";
 import UsahaAdmin from "../admin/UsahaAdmin";
 import StrukturOrganisasiC from "@/admin/StrukturOrganisasiC";
 import PengajarAdmin from "@/admin/PengajarAdmin";  
+import FormLinkAdmin from "@/admin/FormLinkAdmin";
 
 
 
@@ -28,6 +29,7 @@ export default function AdminRoutes() {
           <Route path="usaha" element={<UsahaAdmin />} />
           <Route path="struktur" element={<StrukturOrganisasiC />} />
           <Route path="pengajar" element={<PengajarAdmin />} />
+          <Route path="form-link" element={<FormLinkAdmin />} />
 
         </Route>
       </Route>

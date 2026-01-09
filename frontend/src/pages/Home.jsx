@@ -65,6 +65,7 @@ const Home = () => {
   const [usaha, setUsaha] = useState([]);
   const [struktur, setStruktur] = useState([]);
   const [pengajar, setPengajar] = useState([]);
+  const [formLink, setFormLink] = useState("");
   
 useEffect(() => {
     const fetchPengajar = async () => {
@@ -186,6 +187,20 @@ const fetchStruktur = async () => {
   }
 };
   fetchStruktur();
+}, []);
+
+useEffect(() => {
+  const fetchFormLink = async () => {
+    try {
+      const res = await axios.get(`${API_BASE}/api/form-link/`);
+      if (res.data && Array.isArray(res.data) && res.data.length > 0) {
+        setFormLink(res.data[0].link || "");
+      }
+    } catch (err) {
+      console.error("Failed to fetch form link:", err);
+    }
+  };
+  fetchFormLink();
 }, []);
   const scrollToSection = (id) => {
     const element = document.getElementById(id);
@@ -951,15 +966,17 @@ const fetchStruktur = async () => {
 
           {/* Tombol Daftar */}
           <div className="text-center">
-            <a
-              href="https://docs.google.com/forms/d/e/1FAIpQLSeyth4ZAqR0yQHeZlLIava4BpwTCZvf9lb4YPaVVSVKISge3g/viewform"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Button className="bg-[#80916f] hover:bg-[#6f7f60] text-white font-bold px-12 py-6 text-lg">
-                Daftar Sekarang
+            {formLink ? (
+              <a href={formLink} target="_blank" rel="noopener noreferrer">
+                <Button className="bg-[#80916f] hover:bg-[#6f7f60] text-white font-bold px-12 py-6 text-lg">
+                  Daftar Sekarang
+                </Button>
+              </a>
+            ) : (
+              <Button disabled className="bg-gray-300 text-white font-bold px-12 py-6 text-lg cursor-not-allowed">
+                Link pendaftaran belum tersedia
               </Button>
-            </a>
+            )}
           </div>
         </div>
       </section>

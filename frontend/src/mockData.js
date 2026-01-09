@@ -333,7 +333,7 @@ export const faqData = [
   {
     question: "Kenapa namanya Tunas Qur'an?",
     answer:
-      "Karena setiap santri adalah tunas—tumbuh kecil tapi punya potensi jadi besar, rindang, dan bermanfaat. Qur'an menjadi akarnya, iman batangnya, dan amal buahnya.",
+      "Karena setiap manusia adalah biji, benih generatif, anugrah unik  ditiupkanNya dalam proses penciptaan. Guru, orang tua dan lingkungan sbagai media agar benih bertunas, bertumbuh dngan mengenali identitasnya, sebagai hamba.  Tunas - tumbuh kecil tetapi punya potensi menjadi besar, rindang, dan bermanfaat. Iman sebagai  akar,  islam sebagai syari'at berislam dan meeenghasilkan daun dan buah yang lebat untuk menjadi pribadi yang muhsin. Al Quran adalah nutrisi yg diserap utk bertumbuh, berkarya dna bermanfaat bagi lingkungan dan masyarakat. paripurna sebagai hamba yang penuh cinta dalam pengabdian",
   },
   {
     question: "Apa bedanya Tunas Qur'an dengan pesantren tahfidz lain?",
