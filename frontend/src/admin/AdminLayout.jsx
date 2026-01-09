@@ -6,7 +6,7 @@ import {
   BookOpen,
   Users,
   GraduationCap,
-  
+  Briefcase, // ✅ TAMBAHKAN INI
 } from "lucide-react";
 
 const menu = [
@@ -19,6 +19,9 @@ const menu = [
   { name: "Visi & Misi", icon: BookOpen, path: "/admin/visi-misi" },
   { name: "Kurikulum", icon: GraduationCap, path: "/admin/kurikulum" },
 
+  // ✅ TUNAS USAHA
+  { name: "Tunas Usaha", icon: Briefcase, path: "/admin/usaha" },
+  { name: "struktur", icon: Users, path: "/admin/struktur" },
 ];
 
 export default function AdminLayout() {
@@ -50,7 +53,7 @@ export default function AdminLayout() {
           ))}
         </nav>
 
-        {/* 🔴 LOGOUT DI BAWAH */}
+        {/* LOGOUT */}
         <button
           onClick={handleLogout}
           className="flex items-center gap-3 px-4 py-3 rounded-lg bg-red-500 hover:bg-red-600 font-semibold"

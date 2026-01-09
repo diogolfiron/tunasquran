@@ -193,71 +193,66 @@ export default function GalleryC() {
       <Card>
         <CardContent className="p-6">
           <h2 className="text-lg font-semibold mb-4">Daftar Gallery</h2>
-          {/* Sort galleryList by category (daily -> karya) then by title */}
-          {(() => {
-            const order = { daily: 0, karya: 1 };
-            return (
-              <table className="w-full text-sm border-collapse">
-                <thead>
-                  <tr className="text-left border-b">
-                    <th className="p-2">Kategori</th>
-                    <th className="p-2">Gambar</th>
-                    <th className="p-2">Aksi</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {galleryList.length === 0 && (
-                    <tr>
-                      <td colSpan={3} className="p-2 text-center text-gray-500">
-                        Tidak ada gallery
+
+          {galleryList.length === 0 ? (
+            <p className="text-center text-gray-500">Tidak ada gallery</p>
+          ) : (
+            <table className="w-full text-sm border-collapse">
+              <thead>
+                <tr className="text-left border-b">
+                  <th className="p-2">Kategori</th>
+                  <th className="p-2">Gambar</th>
+                  <th className="p-2">Judul</th>
+                  <th className="p-2">Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                {galleryList
+                  .slice()
+                  .sort((a, b) => {
+                    const order = { daily: 0, karya: 1 };
+                    const oa = order[a.category] ?? 99;
+                    const ob = order[b.category] ?? 99;
+                    if (oa !== ob) return oa - ob;
+                    return (a.title || "").localeCompare(b.title || "");
+                  })
+                  .map((item) => (
+                    <tr key={item.id} className="border-b">
+                      <td className="p-2 capitalize">{item.category}</td>
+                      <td className="p-2">
+                        {item.url ? (
+                          <img
+                            src={item.url.startsWith("http") ? item.url : `${API_BASE}${item.url}`}
+                            alt={item.title}
+                            className="h-16 w-16 object-cover rounded-md"
+                          />
+                        ) : (
+                          <span className="text-gray-400">Tidak ada gambar</span>
+                        )}
+                      </td>
+                      <td className="p-2">{item.title}</td> {/* <-- Judul */}
+                      <td className="p-2 space-x-2">
+                        <button
+                          onClick={() => handleEdit(item)}
+                          className="text-blue-600 hover:underline"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDelete(item.id)}
+                          className="text-red-600 hover:underline"
+                        >
+                          Hapus
+                        </button>
                       </td>
                     </tr>
-                  )}
-                  {galleryList
-                    .slice()
-                    .sort((a, b) => {
-                      const ca = a.category || "";
-                      const cb = b.category || "";
-                      const oa = order[ca] ?? 99;
-                      const ob = order[cb] ?? 99;
-                      if (oa !== ob) return oa - ob;
-                      return (a.title || "").localeCompare(b.title || "");
-                    })
-                    .map((item) => (
-                      <tr key={item.id} className="border-b">
-                        <td className="p-2">{item.category}</td>
-                        <td className="p-2">
-                          {item.url && (
-                            <img
-                              src={item.url.startsWith("http") ? item.url : `${API_BASE}${item.url}`}
-                              alt={item.title}
-                              className="h-16 object-cover rounded-md"
-                            />
-                          )}
-                        </td>
-                        <td className="p-2 space-x-2">
-                          <button
-                            onClick={() => handleEdit(item)}
-                            className="text-blue-600"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => handleDelete(item.id)}
-                            className="text-red-600"
-                          >
-                            Hapus
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                </tbody>
-              </table>
-            );
-          })()}
-          
+                  ))}
+              </tbody>
+            </table>
+          )}
         </CardContent>
       </Card>
+
     </div>
   );
 }

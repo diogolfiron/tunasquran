@@ -59,6 +59,25 @@ const Home = () => {
   const [inspirasiList, setInspirasiList] = useState([]);
   const [visiMisiData, setVisiMisiData] = useState(null);
   const [kurikulumList, setKurikulumList] = useState([]);
+  const [kurikulum, setKurikulum] = useState([]);
+  const [pmbJalur, setPmbJalur] = useState([]);
+  const [pmbKelas, setPmbKelas] = useState([]);
+  const [usaha, setUsaha] = useState([]);
+  const [struktur, setStruktur] = useState([]);
+  const [pengajar, setPengajar] = useState([]);
+  
+useEffect(() => {
+    const fetchPengajar = async () => {
+      try {
+        const res = await axios.get(`${API_BASE}/api/pengajar`);
+        setPengajar(res.data);
+      } catch (error) {
+        console.error("Gagal mengambil data pengajar:", error);
+      }
+    };
+
+    fetchPengajar();
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -104,6 +123,34 @@ const Home = () => {
   fetchVisiMisi();
 }, []);
 
+
+
+ useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [kurikulumRes, jalurRes, kelasRes] = await Promise.all([
+          axios.get(`${API_BASE}/api/kurikulum`),
+          axios.get(`${API_BASE}/api/pmb/jalur`),
+          axios.get(`${API_BASE}/api/pmb/kelas`),
+        ]);
+
+        setKurikulum(
+          Array.isArray(kurikulumRes.data) ? kurikulumRes.data : []
+        );
+        setPmbJalur(
+          Array.isArray(jalurRes.data) ? jalurRes.data : []
+        );
+        setPmbKelas(
+          Array.isArray(kelasRes.data) ? kelasRes.data : []
+        );
+      } catch (error) {
+        console.error("Gagal mengambil data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
 useEffect(() => {
     const fetchKurikulum = async () => {
       try {
@@ -116,6 +163,30 @@ useEffect(() => {
     fetchKurikulum();
   }, []);
 
+useEffect(() => {
+  const fetchUsaha = async () => {
+    try {
+      const res = await axios.get(`${API_BASE}/api/usaha`);
+      setUsaha(res.data);
+    } catch (error) {
+      console.error("Gagal mengambil data usaha:", error);
+    }
+  };
+
+  fetchUsaha();
+}, []);
+
+useEffect(() => {
+const fetchStruktur = async () => {
+  try {
+    const res = await axios.get(`${API_BASE}/api/struktur`);
+    setStruktur(res.data);
+  } catch (error) {
+    console.error("Gagal mengambil struktur:", error);
+  }
+};
+  fetchStruktur();
+}, []);
   const scrollToSection = (id) => {
     const element = document.getElementById(id);
     if (element) {
@@ -466,19 +537,47 @@ useEffect(() => {
 
 
         {/* Struktur Organisasi */}
-        <section id="struktur" className="scroll-mt-20">
-          <h2 className="text-4xl font-bold text-[#80916f] mb-8 text-center">
-            Struktur Organisasi
-          </h2>
-          <Card className="text-[#80916f] shadow-lg">
-            <CardContent className="p-8">
-              <p className="text-center text-gray-600 py-12">
-                Struktur organisasi ini dirancang untuk mendukung keberjalanan
-                kegiatan pendidikan dan pembinaan santri secara optimal.
+<section id="struktur" className="scroll-mt-20">
+  <h2 className="text-4xl font-bold text-[#80916f] mb-8 text-center">
+    Struktur Organisasi
+  </h2>
+
+  <div className="max-w-6xl mx-auto">
+    {struktur.length === 0 ? (
+      <Card className="text-[#80916f] shadow-lg">
+        <CardContent className="p-8">
+          <p className="text-center text-gray-500">
+            Data struktur organisasi belum tersedia
+          </p>
+        </CardContent>
+      </Card>
+    ) : (
+      <div className="grid md:grid-cols-3 gap-6">
+        {struktur.map((item) => (
+          <Card
+            key={item.id}
+            className="text-[#80916f] hover:shadow-lg transition-shadow"
+          >
+            <CardContent className="p-6 text-center">
+              <h3 className="text-lg font-bold mb-1">
+                {item.jabatan}
+              </h3>
+              <p className="text-[#6f7f60] font-semibold mb-2">
+                {item.nama}
               </p>
+              {item.deskripsi && (
+                <p className="text-sm text-gray-600">
+                  {item.deskripsi}
+                </p>
+              )}
             </CardContent>
           </Card>
-        </section>
+        ))}
+      </div>
+    )}
+  </div>
+</section>
+
 
         {/* Kurikulum */}
 <section id="kurikulum" className="scroll-mt-20">
@@ -517,31 +616,39 @@ useEffect(() => {
   </div>
 </section>
 
-        {/* Pengajar */}
-        <section id="pengajar" className="scroll-mt-20">
-          <h2 className="text-4xl font-bold text-[#80916f] mb-4 text-center">
-            Pengajar
-          </h2>
-          <p className="text-center text-gray-600 mb-12 max-w-3xl mx-auto">
-            Di Tunas Qur'an, pengajar bukan sekadar guru — mereka adalah mentor
-            hidup.
-          </p>
-          <div className="grid md:grid-cols-2 gap-4">
-            {pengajar.map((teacher, index) => (
-              <Card
-                key={index}
-                className="border-yellow-100 bg-gradient-to-r from-yellow-50 to-white"
-              >
-                <CardContent className="p-4">
-                  <h4 className="font-semibold text-[#80916f] mb-1">
-                    {teacher.name}
-                  </h4>
-                  <p className="text-sm text-gray-600">{teacher.subject}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </section>
+         <section id="pengajar" className="scroll-mt-20">
+      <h2 className="text-4xl font-bold text-[#80916f] mb-4 text-center">
+        Pengajar
+      </h2>
+
+      <p className="text-center text-gray-600 mb-12 max-w-3xl mx-auto">
+        Di Tunas Qur'an, pengajar bukan sekadar guru — mereka adalah mentor hidup.
+      </p>
+
+      {pengajar.length === 0 ? (
+        <p className="text-center text-gray-500">
+          Data pengajar belum tersedia
+        </p>
+      ) : (
+        <div className="grid md:grid-cols-2 gap-4">
+          {pengajar.map((teacher) => (
+            <Card
+              key={teacher.id}
+              className="border-yellow-100 bg-gradient-to-r from-yellow-50 to-white"
+            >
+              <CardContent className="p-4">
+                <h4 className="font-semibold text-[#80916f] mb-1">
+                  {teacher.nama}
+                </h4>
+                <p className="text-sm text-gray-600">
+                  {teacher.mapel}
+                </p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+    </section>
 
         {/* Galeri */}
         <section id="galeri" className="scroll-mt-20">
@@ -662,35 +769,47 @@ useEffect(() => {
           </Tabs>
         </section>
 
-        {/* Usaha */}
-        <section id="usaha" className="scroll-mt-20">
-          <h2 className="text-4xl font-bold text-[#80916f] mb-4 text-center">
-            Tunas Usaha
-          </h2>
-          <p className="text-center text-gray-600 mb-12 max-w-3xl mx-auto">
-            Dari koperasi, peternakan, hingga kemitraan tani—semua ini bukan
-            sekadar unit usaha.
-          </p>
-          <div className="grid md:grid-cols-3 gap-6">
-            {usaha.map((item, index) => (
-              <Card
-                key={index}
-                className="text-[#80916f] hover:shadow-lg transition-shadow duration-300"
-              >
-                <CardHeader>
-                  <CardTitle className="text-xl text-[#80916f]">
-                    {item.title}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-700 leading-relaxed">
-                    {item.description}
-                  </p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </section>
+        {/* =====================
+    TUNAS USAHA
+===================== */}
+<section id="usaha" className="scroll-mt-20 py-20 bg-gray-50">
+  <h2 className="text-4xl font-bold text-[#80916f] mb-4 text-center">
+    Tunas Usaha
+  </h2>
+
+  <p className="text-center text-gray-600 mb-12 max-w-3xl mx-auto">
+    Dari koperasi, peternakan, hingga kemitraan tani—semua ini bukan
+    sekadar unit usaha.
+  </p>
+
+  {usaha.length === 0 ? (
+    <p className="text-center text-gray-500">
+      Data usaha belum tersedia
+    </p>
+  ) : (
+    <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+      {usaha.map((item) => (
+        <Card
+          key={item.id}
+          className="text-[#80916f] hover:shadow-lg transition-shadow duration-300"
+        >
+          <CardHeader>
+            <CardTitle className="text-xl text-[#80916f]">
+              {item.title}
+            </CardTitle>
+          </CardHeader>
+
+          <CardContent>
+            <p className="text-gray-700 leading-relaxed">
+              {item.description}
+            </p>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  )}
+</section>
+
 
         {/* ZISWAF */}
         <section id="ziswaf" className="scroll-mt-20">
@@ -751,23 +870,32 @@ useEffect(() => {
 
         {/* PMB */}
         <section id="pmb" className="scroll-mt-20">
-          <h2 className="text-4xl font-bold text-[#80916f] mb-4 text-center">
-            Penerimaan Mahasantri Baru
-          </h2>
-          <p className="text-center text-gray-600 mb-12 max-w-3xl mx-auto">
-            Kami tidak hanya mendidik santri, tapi menyiapkan pemimpin masa
-            depan.
-          </p>
-          <div className="space-y-8">
-            <div>
-              <h3 className="text-2xl font-bold text-[#80916f] mb-6 text-center">
-                Jalur Pendaftaran
-              </h3>
+        <h2 className="text-4xl font-bold text-[#80916f] mb-4 text-center">
+          Penerimaan Mahasantri Baru
+        </h2>
+
+        <p className="text-center text-gray-600 mb-12 max-w-3xl mx-auto">
+          Kami tidak hanya mendidik santri, tetapi menyiapkan pemimpin masa
+          depan.
+        </p>
+
+        <div className="space-y-12">
+          {/* Jalur Pendaftaran */}
+          <div>
+            <h3 className="text-2xl font-bold text-[#80916f] mb-6 text-center">
+              Jalur Pendaftaran
+            </h3>
+
+            {pmbJalur.length === 0 ? (
+              <p className="text-center text-gray-500">
+                Jalur pendaftaran belum tersedia
+              </p>
+            ) : (
               <div className="grid md:grid-cols-3 gap-6">
-                {pmbInfo.jalur.map((jalur, index) => (
+                {pmbJalur.map((jalur) => (
                   <Card
-                    key={index}
-                    className="text-[#80916f] hover:shadow-xl transition-shadow duration-300"
+                    key={jalur.id}
+                    className="hover:shadow-xl transition-shadow duration-300"
                   >
                     <CardHeader>
                       <CardTitle className="text-xl text-[#80916f]">
@@ -785,15 +913,24 @@ useEffect(() => {
                   </Card>
                 ))}
               </div>
-            </div>
-            <div>
-              <h3 className="text-2xl font-bold text-[#80916f] mb-6 text-center">
-                Program Kelas
-              </h3>
+            )}
+          </div>
+
+          {/* Program Kelas */}
+          <div>
+            <h3 className="text-2xl font-bold text-[#80916f] mb-6 text-center">
+              Program Kelas
+            </h3>
+
+            {pmbKelas.length === 0 ? (
+              <p className="text-center text-gray-500">
+                Program kelas belum tersedia
+              </p>
+            ) : (
               <div className="grid md:grid-cols-2 gap-6">
-                {pmbInfo.kelas.map((kelas, index) => (
+                {pmbKelas.map((kelas) => (
                   <Card
-                    key={index}
+                    key={kelas.id}
                     className="border-yellow-200 bg-gradient-to-br from-yellow-50 to-white shadow-lg"
                   >
                     <CardHeader>
@@ -809,20 +946,23 @@ useEffect(() => {
                   </Card>
                 ))}
               </div>
-            </div>
-            <div className="text-center">
-              <a
-                href="https://docs.google.com/forms/d/e/1FAIpQLSeyth4ZAqR0yQHeZlLIava4BpwTCZvf9lb4YPaVVSVKISge3g/viewform"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Button className="bg-[#80916f] hover:bg-[#6f7f60] text-white font-bold px-12 py-6 text-lg">
-                  Daftar Sekarang
-                </Button>
-              </a>
-            </div>
+            )}
           </div>
-        </section>
+
+          {/* Tombol Daftar */}
+          <div className="text-center">
+            <a
+              href="https://docs.google.com/forms/d/e/1FAIpQLSeyth4ZAqR0yQHeZlLIava4BpwTCZvf9lb4YPaVVSVKISge3g/viewform"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Button className="bg-[#80916f] hover:bg-[#6f7f60] text-white font-bold px-12 py-6 text-lg">
+                Daftar Sekarang
+              </Button>
+            </a>
+          </div>
+        </div>
+      </section>
 
         {/* Kontak */}
         <section id="kontak" className="scroll-mt-20">
