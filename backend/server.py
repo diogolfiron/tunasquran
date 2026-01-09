@@ -282,6 +282,62 @@ async def get_jalur():
     return items
 
 
+# --- Form Link models & routes ---
+class FormLinkItem(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    link: str
+
+
+class FormLinkCreate(BaseModel):
+    link: str
+
+
+class FormLinkUpdate(BaseModel):
+    link: Optional[str] = None
+
+
+form_link_router = APIRouter(prefix="/form-link")
+
+
+@form_link_router.get("/", response_model=List[FormLinkItem])
+async def get_form_links():
+    items = await db.form_link.find({}, {"_id": 0}).to_list(1000)
+    return items
+
+
+@form_link_router.post("/", response_model=FormLinkItem)
+async def create_form_link(input: FormLinkCreate):
+    new_item = FormLinkItem(**input.model_dump())
+    await db.form_link.insert_one(new_item.model_dump())
+    return new_item
+
+
+@form_link_router.put("/{item_id}", response_model=FormLinkItem)
+async def update_form_link(item_id: str, update: FormLinkUpdate):
+    update_dict = {k: v for k, v in update.model_dump().items() if v is not None}
+    if not update_dict:
+        raise HTTPException(status_code=400, detail="Tidak ada data untuk diperbarui")
+    result = await db.form_link.update_one({"id": item_id}, {"$set": update_dict})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Form link tidak ditemukan")
+    doc = await db.form_link.find_one({"id": item_id}, {"_id": 0})
+    return doc
+
+
+@form_link_router.delete("/{item_id}")
+async def delete_form_link(item_id: str):
+    res = await db.form_link.delete_one({"id": item_id})
+    if res.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Form link tidak ditemukan")
+    return {"deleted": True}
+
+
+# include form_link router into api_router
+api_router.include_router(form_link_router)
+
+
 @api_router.post("/pmb/jalur", response_model=JalurItem)
 async def create_jalur(input: JalurCreate):
     obj = JalurItem(**input.model_dump())
